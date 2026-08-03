@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "weather"
+version = "0.1.0"
+description = "Десктопное приложение: прогноз погоды на неделю (world-weather.ru)"
+requires-python = ">=3.9"
+dependencies = [
+    "beautifulsoup4==4.14.3",
+    "deep_translator==1.11.4",
+    "python-dotenv==1.2.2",
+    "requests==2.34.2",
+]
+
+[project.scripts]
+weather-app = "weather.gui:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+weather = ["data/*.json"]
