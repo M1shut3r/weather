@@ -21,7 +21,8 @@ Desktop weather application with a clean Tkinter GUI. Built with Python using HT
 1. **Clone the repository**
    ```bash
    git clone https://github.com/M1shut3r/weather.git
-   cd weather
+   cd weather 
+   ```
    
 1. **Configure environment variables**
    ```bash
@@ -55,7 +56,7 @@ Or run as a module:
 
 ### Project Structure
 
-```json
+```bash
 weather/
 ├── src/weather/                  # Main package (src-layout)
 │   ├── __init__.py
