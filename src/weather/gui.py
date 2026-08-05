@@ -290,9 +290,7 @@ class WeatherApp:
                     len(weather_days_mas),
                 )
             ):
-                weather.append(
-                    f"{self.days_temperature[i]}\n{weather_days_mas[i]}"
-                )
+                weather.append(f"{self.days_temperature[i]}\n{weather_days_mas[i]}")
 
             for i, widget in enumerate(self.weather_widgets):
                 widget["text"].delete(1.0, tk.END)
@@ -315,4 +313,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

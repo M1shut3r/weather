@@ -68,4 +68,3 @@ def find_your_city(api_token: str) -> str:
     response.raise_for_status()
     response_json = response.json()
     return response_json["city"]
-    
