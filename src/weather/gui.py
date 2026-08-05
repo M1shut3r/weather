@@ -4,7 +4,7 @@ import tkinter as tk
 from bs4.element import NavigableString
 from dotenv import load_dotenv
 
-from .parser_html import parser, find_your_city
+from .parser_html import find_your_city, parser
 
 
 class WeatherApp:
@@ -48,8 +48,16 @@ class WeatherApp:
         """Централизованное создание кнопок с корректными подсказками."""
         buttons_config = [
             {"text": "🔍", "command": self.search_city, "tooltip": "Поиск города"},
-            {"text": "📍", "command": self.get_current_location, "tooltip": "Моё местоположение"},
-            {"text": "🔄", "command": self.refresh_weather, "tooltip": "Обновить погоду"},
+            {
+                "text": "📍",
+                "command": self.get_current_location,
+                "tooltip": "Моё местоположение",
+            },
+            {
+                "text": "🔄",
+                "command": self.refresh_weather,
+                "tooltip": "Обновить погоду",
+            },
         ]
         self.buttons = []
         for config in buttons_config:
@@ -115,7 +123,9 @@ class WeatherApp:
 
     def setup_weather_grid(self):
         """Настройка сетки для погодных карточек."""
-        self.grid_frame = tk.Frame(self.main_container, bg="white", highlightthickness=0)
+        self.grid_frame = tk.Frame(
+            self.main_container, bg="white", highlightthickness=0
+        )
         self.grid_frame.pack(fill="both", expand=True, padx=10, pady=5)
         for i in range(4):
             self.grid_frame.columnconfigure(i, weight=1)
@@ -124,7 +134,15 @@ class WeatherApp:
 
     def create_weather_cards(self):
         """Создание карточек погоды."""
-        colors = ["#FFB6C1", "#FFDAB9", "#E6E6FA", "#C1FFC1", "#B0E0E6", "#F0E68C", "#DDA0DD"]
+        colors = [
+            "#FFB6C1",
+            "#FFDAB9",
+            "#E6E6FA",
+            "#C1FFC1",
+            "#B0E0E6",
+            "#F0E68C",
+            "#DDA0DD",
+        ]
         for widget in self.weather_widgets:
             try:
                 widget["card"].destroy()

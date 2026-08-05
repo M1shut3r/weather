@@ -50,11 +50,15 @@ def parser(city: str):
     content_weather = page.content
 
     soup = BeautifulSoup(content_weather, "html.parser")
-    mas_days_div = [item.find_all("div") for item in soup.find_all("li", class_="tab-w")]
+    mas_days_div = [
+        item.find_all("div") for item in soup.find_all("li", class_="tab-w")
+    ]
     spans = soup.find_all("span", class_="icon-weather")
     mas_weather_span = [span.get("title") for span in spans]
 
-    return html_parser(mas_days_html=mas_days_div), weather_parser(mas_weather=mas_weather_span)
+    return html_parser(mas_days_html=mas_days_div), weather_parser(
+        mas_weather=mas_weather_span
+    )
 
 
 def find_your_city(api_token: str) -> str:
