@@ -55,7 +55,7 @@ Or run as a module:
 
 ### Project Structure
 
-```json
+```bash
 weather/
 ├── src/weather/                  # Main package (src-layout)
 │   ├── __init__.py
