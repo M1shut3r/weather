@@ -1,8 +1,11 @@
 import os
 import tkinter as tk
+from contextlib import suppress
+from tkinter import TclError
 
 from bs4.element import NavigableString
 from dotenv import load_dotenv
+from requests import RequestException
 
 from .parser_html import find_your_city, parser
 
@@ -16,10 +19,17 @@ class WeatherApp:
         self.root.title("Погода на неделю")
         self.root.geometry(f"{size_x}x{size_y}")
         self.root.configure(bg="white")
-        self.main_container = tk.Frame(self.root, bg="white", highlightthickness=0)
+
+        self.main_container = tk.Frame(
+            self.root,
+            bg="white",
+            highlightthickness=0,
+        )
         self.main_container.pack(fill="both", expand=True)
+
         self.setup_search_section()
         self.setup_weather_grid()
+
         self.days_data = []
         self.weather_widgets = []
         self.days_temperature = []
@@ -27,8 +37,13 @@ class WeatherApp:
 
     def setup_search_section(self):
         """Настройка секции поиска с кнопками."""
-        search_frame = tk.Frame(self.main_container, bg="white", highlightthickness=0)
+        search_frame = tk.Frame(
+            self.main_container,
+            bg="white",
+            highlightthickness=0,
+        )
         search_frame.pack(fill="x", pady=10, padx=10)
+
         self.input_entry = tk.Entry(
             search_frame,
             font=("Arial", 10),
@@ -42,12 +57,17 @@ class WeatherApp:
         self.input_entry.insert(0, "Поиск по городу...")
         self.input_entry.bind("<FocusIn>", self.on_entry_click)
         self.input_entry.bind("<FocusOut>", self.on_focus_out)
+
         self.create_buttons(search_frame)
 
     def create_buttons(self, parent):
         """Централизованное создание кнопок с корректными подсказками."""
         buttons_config = [
-            {"text": "🔍", "command": self.search_city, "tooltip": "Поиск города"},
+            {
+                "text": "🔍",
+                "command": self.search_city,
+                "tooltip": "Поиск города",
+            },
             {
                 "text": "📍",
                 "command": self.get_current_location,
@@ -59,7 +79,9 @@ class WeatherApp:
                 "tooltip": "Обновить погоду",
             },
         ]
+
         self.buttons = []
+
         for config in buttons_config:
             btn = tk.Button(
                 parent,
@@ -72,6 +94,7 @@ class WeatherApp:
                 activebackground="#e0e0e0",
             )
             btn.pack(side="left", padx=2)
+
             self.add_tooltip(btn, config["tooltip"])
             self.buttons.append(btn)
 
@@ -81,14 +104,18 @@ class WeatherApp:
 
         def show_tooltip(event):
             nonlocal tooltip_window
+
             if tooltip_window and tooltip_window.winfo_exists():
                 tooltip_window.destroy()
                 tooltip_window = None
+
             tooltip_window = tk.Toplevel(widget)
             tooltip_window.wm_overrideredirect(True)
+
             x = event.x_root + 15
             y = event.y_root + 15
             tooltip_window.wm_geometry(f"+{x}+{y}")
+
             label = tk.Label(
                 tooltip_window,
                 text=text,
@@ -101,19 +128,19 @@ class WeatherApp:
                 font=("Arial", 9),
             )
             label.pack()
+
             tooltip_window.after(3000, lambda: hide_tooltip(tooltip_window))
 
         def hide_tooltip(tooltip_to_hide):
             """Скрыть подсказку."""
-            try:
+            with suppress(TclError):
                 if tooltip_to_hide and tooltip_to_hide.winfo_exists():
                     tooltip_to_hide.destroy()
-            except Exception:
-                pass
 
         def on_leave(event):
             """При уходе мыши с виджета - мгновенно скрываем подсказку."""
             nonlocal tooltip_window
+
             if tooltip_window and tooltip_window.winfo_exists():
                 tooltip_window.destroy()
                 tooltip_window = None
@@ -124,11 +151,15 @@ class WeatherApp:
     def setup_weather_grid(self):
         """Настройка сетки для погодных карточек."""
         self.grid_frame = tk.Frame(
-            self.main_container, bg="white", highlightthickness=0
+            self.main_container,
+            bg="white",
+            highlightthickness=0,
         )
         self.grid_frame.pack(fill="both", expand=True, padx=10, pady=5)
+
         for i in range(4):
             self.grid_frame.columnconfigure(i, weight=1)
+
         for i in range(2):
             self.grid_frame.rowconfigure(i, weight=1)
 
@@ -143,15 +174,19 @@ class WeatherApp:
             "#F0E68C",
             "#DDA0DD",
         ]
+
         for widget in self.weather_widgets:
-            try:
-                widget["card"].destroy()
-            except Exception:
-                pass
+            card = widget.get("card")
+
+            if card is not None:
+                with suppress(TclError):
+                    card.destroy()
+
         self.weather_widgets = []
+
         for i, day in enumerate(self.days_data[:7]):
             row, col = (0, i) if i < 4 else (1, i - 4)
-            # Карточка
+
             card = tk.Frame(
                 self.grid_frame,
                 bg=colors[i],
@@ -160,6 +195,7 @@ class WeatherApp:
                 highlightthickness=0,
             )
             card.grid(row=row, column=col, padx=3, pady=1, sticky="nsew")
+
             day_label = tk.Label(
                 card,
                 text=day,
@@ -167,6 +203,7 @@ class WeatherApp:
                 bg=colors[i],
             )
             day_label.pack(pady=0)
+
             weather_text = tk.Text(
                 card,
                 height=3,
@@ -177,6 +214,7 @@ class WeatherApp:
                 relief="flat",
             )
             weather_text.pack(padx=3, pady=0, fill="both", expand=True)
+
             self.weather_widgets.append(
                 {
                     "card": card,
@@ -200,6 +238,7 @@ class WeatherApp:
     def search_city(self):
         """Поиск погоды для города."""
         city = self.input_entry.get()
+
         if city and city != "Поиск по городу...":
             self.input_entry.config(fg="green")
             self.root.after(1500, lambda: self.input_entry.config(fg="gray"))
@@ -215,6 +254,7 @@ class WeatherApp:
     def refresh_weather(self):
         """Обновление погоды."""
         current_city = self.input_entry.get()
+
         if current_city and current_city != "Поиск по городу...":
             self.update_weather(current_city)
 
@@ -222,9 +262,12 @@ class WeatherApp:
         """Правильный порядок дней недели."""
         self.days_data = []
         self.days_temperature = []
+
         for day in days_info:
             self.days_data.append(day["day-week"])
+
             temperature = day["day-temperature"]
+
             if isinstance(temperature, NavigableString):
                 self.days_temperature.append(str(temperature))
             else:
@@ -234,22 +277,35 @@ class WeatherApp:
         """Обновление погоды."""
         try:
             info_days_mas, weather_days_mas = parser(city)
+
             self.order_days(info_days_mas)
             self.create_weather_cards()
+
             weather = []
-            for i in range(min(7, len(self.days_temperature), len(weather_days_mas))):
+
+            for i in range(
+                min(
+                    7,
+                    len(self.days_temperature),
+                    len(weather_days_mas),
+                )
+            ):
                 weather.append(f"{self.days_temperature[i]}\n{weather_days_mas[i]}")
+
             for i, widget in enumerate(self.weather_widgets):
                 widget["text"].delete(1.0, tk.END)
+
                 if i < len(weather):
                     weather_text = weather[i]
                     widget["text"].insert(1.0, f"{weather_text}")
-        except Exception as e:
+
+        except (RequestException, KeyError, IndexError, TclError) as e:
             print(f"Ошибка при обновлении погоды: {e}")
 
 
 def main():
     load_dotenv()
+
     root = tk.Tk()
     WeatherApp(root)
     root.mainloop()
