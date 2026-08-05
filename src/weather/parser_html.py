@@ -32,10 +32,7 @@ def html_parser(mas_days_html):
 
 def weather_parser(mas_weather):
     """Парсинг вида погоды."""
-    json_info_weather = []
-    for day in mas_weather:
-        json_info_weather.append(day)
-    return json_info_weather
+    return list(mas_weather)
 
 
 def parser(city: str):
@@ -71,3 +68,4 @@ def find_your_city(api_token: str) -> str:
     response.raise_for_status()
     response_json = response.json()
     return response_json["city"]
+    
